@@ -1,12 +1,30 @@
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json')
+const fs = require("fs");
+Discord.commands = new Discord.Collection();
+const warns = JSON.parse(fs.readFileSync("./warnings.json", "utf8"));
 
+fs.readdir("./commands", (err, files) => {
 
+    if(err) console.log(err);
 
+    let jsFile = files.filter(f => f.split(".").pop() === "js")
+    if(jsFile.length <= 0){
+        console.log("kan geen commando's vinden");
+        return;
+    }
+
+    jsFile.forEach((f, i) => {
+        let props = require(`./commands/${f}`);
+        console.log(`${f} geladen`)
+        Discord.commands.set(props.help.name, props);
+    })
+
+});
 const client = new Discord.Client();
 
 
-
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 
 
